@@ -11,14 +11,9 @@ import {
 import { useState } from "react";
 import axios from 'axios';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { useNavigation } from '@react-navigation/native';
 
-
-
-export default function LoginScreen({}) {
-
-    const navigation = useNavigation();
-
+export default function LoginScreen({navigation}) {
+    
     const [id, setId] = useState("");
     const [password, setPassword] = useState("");
 
@@ -39,7 +34,7 @@ export default function LoginScreen({}) {
             console.log('전송 성공:', response.data);
             if(response.data["success"]=== true){
                 console.log("됨")
-                navigation.navigate('MemoMain');
+                 navigation.navigate('MemoMain');
             }
             else{
 
@@ -79,21 +74,6 @@ export default function LoginScreen({}) {
                 />
                 </View>
                 <View style={styles.formArea}>
-                    <TextInput
-                        style={styles.textForm} 
-                        placeholder={"ID"}
-                        value={id}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        onChangeText={(text) => setId(text)}/>
-                    <TextInput 
-                        style={styles.textForm} 
-                        placeholder={"PW"}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        secureTextEntry={true}
-                        value={password}
-                        onChangeText={(text)=> setPassword(text)} />
 
                 </View>
                 <View style={styles.TailArea}>
@@ -128,9 +108,9 @@ const styles = StyleSheet.create({
     titleArea: {
         // width: '100%',
         // padding: wp('10%'),
-        flex: 0.8,
+        flex: 0.2,
         alignItems: 'center',
-        //backgroundColor : "blue",
+        backgroundColor : "blue",
         justifyContent:'flex-end',
         
     },
