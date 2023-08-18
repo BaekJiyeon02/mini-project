@@ -12,21 +12,21 @@ import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import DropDownPicker from 'react-native-dropdown-picker';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 
 
-export default function MemoMainScreen({}) {
+export default function MemoFolderScreen({}) {
     const data = [
         { label: '생성순', value: '1' },
         { label: '이름순', value: '2' },
 
       ];
 
-    const navigation = useNavigation();
+      const navigation = useNavigation();
 
     const [folderList, setFolderList] = useState([]);
     const [memoList, setMemoList] = useState([]);
@@ -71,14 +71,22 @@ export default function MemoMainScreen({}) {
             console.error('Error fetching data:', error);
         }
     };
-    const moveToFolder = () => {
+    const moveToFolder = (folderId) => {
         // Your logic here
-        navigation.navigate('MemoFolder');
     }
     const moveToMemo =(memoId)=>{
 
     }
-
+    const renderLabel = () => {
+        if (value || isFocus) {
+          return (
+            <Text style={[styles.label, isFocus && { color: 'blue' }]}>
+              Dropdown label
+            </Text>
+          );
+        }
+        return null;
+      };
 
     return (
         <View style={styles.container}>
@@ -118,7 +126,7 @@ export default function MemoMainScreen({}) {
                 {folderList.map((folder, index) => (
                     <TouchableOpacity
                         style={styles.folderButton}
-                        onPress={() => moveToFolder()}
+                        onPress={() => moveToFolder(folder.folderId)}
                         key={index}
                     >
                         <View style={styles.folderTitleArea}>
@@ -146,6 +154,7 @@ export default function MemoMainScreen({}) {
                 </TouchableOpacity>
                 </View>
             </View>
+            <View style={styles.subseperator}/>
             <View style={styles.memoListArea}>
             <ScrollView
                 vertical

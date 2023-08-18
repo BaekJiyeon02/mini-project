@@ -12,6 +12,7 @@ import { useState } from "react";
 import axios from 'axios';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -36,10 +37,12 @@ export default function LoginScreen({}) {
         axios.post(apiUrl, requestData)
         .then(response => {
             // 요청이 성공한 경우 응답 데이터 처리
+            // 로그인 성공
             console.log('전송 성공:', response.data);
             if(response.data["success"]=== true){
                 console.log("됨")
-                navigation.navigate('MemoMain');
+                saveId();
+                navigation.navigate('MemoMain');    //임시로 달력 만들어지기 전까지 MemoMain으로 이동
             }
             else{
 
@@ -52,7 +55,6 @@ export default function LoginScreen({}) {
                     onPress: () => console.log("아이디 비밀번호 불일치")     //onPress 이벤트시 콘솔창에 로그를 찍는다
                 },
                 // { text: "네", onPress: () => console.log("그렇다는데") }, //버튼 제목
-
                 ],
                 { cancelable: false }
                 );
@@ -62,12 +64,20 @@ export default function LoginScreen({}) {
             // 요청이 실패한 경우 에러 처리
             console.error('전송 실패:', error);
         });
-
     }
 
     const doJoin=()=>{
         navigation.navigate('Register');
 
+    }
+    //아이디 정보 저장
+    const saveId=async() => {
+        try {
+            await AsyncStorage.setItem("userId", JSON.stringify(id));
+            console.log('로그인 정보 저장 성공'); // 확인용
+        } catch (e) {
+            console.error(e);
+        }
     }
     // render(){
         return (
