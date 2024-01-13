@@ -3525,7 +3525,7 @@ expo-asset@~8.9.1:
   integrity sha512-aHMaZkIG5/UoguINEHm2ln/KviU2m/yuryslnhCKR3KXRxiLnMhxmrONLGbknuNE0O1iCaprrl1w3y71u01Rpw==
   dependencies:
     blueimp-md5 "^2.10.0"
-    expo-constants "~13.1.1"
+    expo-constants "~14.3.0"
     expo-file-system "~15.3.0"
     invariant "^2.2.4"
     md5-file "^3.2.3"
@@ -3540,6 +3540,21 @@ expo-constants@13.1.1:
     "@expo/config" "^6.0.14"
     uuid "^3.3.2"
 
+expo-constants@~14.2.1:
+  version "14.2.1"
+  resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-14.2.1.tgz#b5b6b8079d2082c31ccf2cbc7cf97a0e83c229c3"
+  integrity sha512-DD5u4QmBds2U7uYo409apV7nX+XjudARcgqe7S9aRFJ/6kyftmuxvk1DpaU4X42Av8z/tfKwEpuxl+vl7HHx/Q==
+  dependencies:
+    "@expo/config" "~8.0.0"
+    uuid "^3.3.2"
+
+expo-constants@~14.3.0:
+  version "14.3.0"
+  resolved "https://registry.yarnpkg.com/expo-constants/-/expo-constants-14.3.0.tgz#56478ddbbff990273174819528d218f9576ac147"
+  integrity sha512-O8b+mZlPXZGH4wLLd+jMihGD0ZSMJRSmSsmcG7T60jHU3Dw4yDIuzHM/wMoBoL1pxLIbEwvcwDj0w8c+Sn+1sQ==
+  dependencies:
+    "@expo/config" "~8.0.0"
+    uuid "^3.3.2"
 
 expo-device@~5.2.1:
   version "5.2.1"
@@ -6237,6 +6252,13 @@ react-is@^16.13.0, react-is@^16.13.1, react-is@^16.7.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-native-animatable@1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-animatable/-/react-native-animatable-1.3.3.tgz#a13a4af8258e3bb14d0a9d839917e9bb9274ec8a"
+  integrity sha512-2ckIxZQAsvWn25Ho+DK3d1mXIgj7tITkrS4pYDvx96WyOttSvzzFeQnM2od0+FUMzILbdHDsDEqZvnz1DYNQ1w==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-native-bouncy-checkbox@^3.0.7:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/react-native-bouncy-checkbox/-/react-native-bouncy-checkbox-3.0.7.tgz#011aef92b4fbde2a1f223165626c56a9ffe637fb"
@@ -6266,6 +6288,16 @@ react-native-codegen@^0.71.5:
     flow-parser "^0.185.0"
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
+
+react-native-dialog-input@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/react-native-dialog-input/-/react-native-dialog-input-1.0.8.tgz#6813d3b158bbb85d83a94310f38695d9f2b02682"
+  integrity sha512-W9YNMt6r+rUUMDEkOR1WMuGfSJw97ujB8H1xp8TjJTOnYVSlsf4aEP6t+J8tVk3XZaDcTawXgDjxH6E1WVWRog==
+
+react-native-dialog@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-dialog/-/react-native-dialog-9.3.0.tgz#9d745cc51653a1e2ae08076b46f11d99723c47f6"
+  integrity sha512-JEOJY/0AzTM9grIl0BL8o/IJPIJru7k5MPj9POTE9RRezUEtgn0YSvCpTlBtG0obWgOdzg2otMz1OQvMXS0wMQ==
 
 react-native-dropdown-picker@^5.4.6:
   version "5.4.6"
@@ -6343,6 +6375,14 @@ react-native-material-textfield@^0.12.0:
   integrity sha512-eB2xjsOtdrQ4KuikXeGf0CSYS4Vg9K7ii5YsWX57VvzPSVp08P8bdqTrLY6QucBR397YWlewN/n17H34kd7teA==
   dependencies:
     prop-types "^15.5.9"
+
+react-native-modal@^13.0.1:
+  version "13.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-13.0.1.tgz#691f1e646abb96fa82c1788bf18a16d585da37cd"
+  integrity sha512-UB+mjmUtf+miaG/sDhOikRfBOv0gJdBU2ZE1HtFWp6UixW9jCk/bhGdHUgmZljbPpp0RaO/6YiMmQSSK3kkMaw==
+  dependencies:
+    prop-types "^15.6.2"
+    react-native-animatable "1.3.3"
 
 react-native-reanimated@^3.3.0:
   version "3.4.2"

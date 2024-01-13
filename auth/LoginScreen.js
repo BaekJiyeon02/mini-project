@@ -8,7 +8,7 @@ import {
     Image,
     Alert,
 } from 'react-native';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from 'axios';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
@@ -17,6 +17,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function LoginScreen({}) {
+
+    useEffect(() => {
+        AsyncStorage.getItem('userId').then(userId => {
+            const parsedUserId = JSON.parse(userId);
+
+            console.log(parsedUserId);
+        });
+    }, []);
 
     const navigation = useNavigation();
 
@@ -31,7 +39,7 @@ export default function LoginScreen({}) {
         };
 
         // API URL 설정
-        const apiUrl = 'http://43.200.179.53:3000/login';
+        const apiUrl = 'http://43.201.9.115:3000/login';
         
         // Axios를 이용하여 POST 요청 보내기
         axios.post(apiUrl, requestData)

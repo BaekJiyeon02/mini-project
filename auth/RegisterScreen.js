@@ -1,3 +1,6 @@
+// SignUpScreen.js
+// 회원가입 페이지
+
 import React from 'react';
 import {
     View,
@@ -10,13 +13,14 @@ import {
     Keyboard,
     TouchableWithoutFeedback,
 } from 'react-native';
-import { useState, useRef } from "react";
+import { Component, useState, useRef, useAsync } from "react";
 import axios from 'axios';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
+import CustomButton from './CustomButton'; // 커스텀 버튼 가져오기
 
 
-export default function RegisterScreen({}) {
+export default function SignUpScreen() {
+
     let [Checklist, setChecklist] = useState({
         pwCheck: false,
         pwString: false,
@@ -27,21 +31,21 @@ export default function RegisterScreen({}) {
         nicknameCheck: false,
         // nicknameString: false,
     });
-    const navigation = useNavigation();
 
+    const navigation = useNavigation();
     const passwordInput =useRef();
     const passwordCheckInput =useRef();
     const idInput =useRef();
-    
+
     const [idValue, setId] = useState("");
     const [passwordValue, setPassword] = useState("");
     const [passwordCheck, setPasswordCheck] = useState("");
     const [nicknameValue, setNickname] = useState("");
 
-    const apiUrl ='http://43.200.179.53:3000/create-user';
+    const apiUrl ='http://43.201.9.115:3000/create-user';
 
-    const apiUrlIdCheck = 'http://43.200.179.53:3000/check-id';
-    const apiUrlNicknameCheck = 'http://43.200.179.53:3000/check-nickname';
+    const apiUrlIdCheck = 'http://43.201.9.115:3000/check-id';
+    const apiUrlNicknameCheck = 'http://43.201.9.115:3000/check-nickname';
 
     const [isLoading, setIsLoading] = useState(false); // 추가: 로딩 스피너를 위한 상태 추가
 
@@ -98,6 +102,9 @@ export default function RegisterScreen({}) {
                     Alert.alert(response.data["message"], "=^._.^= ∫");
                     navigation.navigate('Login');
                 }
+                else if(response.data["property"]==400){
+                    Alert.alert(response.data["message"], "입력해주시길 바랍니다.");
+                }
             } catch (error) {
                 console.error('전송 실패:', error);
             } finally {
@@ -144,6 +151,10 @@ export default function RegisterScreen({}) {
                         Alert.alert("이미 사용 중인 닉네임입니다");
                         Checklist.nicknameCheck=false;
                     }
+                    if(response.data["property"]==400){
+                        Alert.alert(response.data["message"]);
+                        Checklist.nicknameCheck=false;
+                    }
                 })
             .catch(error => {
                 // 요청이 실패한 경우 에러 처리
@@ -176,7 +187,11 @@ export default function RegisterScreen({}) {
             if(response.data["property"]==401){
                 Alert.alert("이미 사용 중인 아이디입니다");
                 Checklist.idCheck=false;
-            }   
+            }
+            if(response.data["property"]==400){
+                Alert.alert(response.data["message"]);
+                Checklist.idCheck=false;
+            }
         })
         .catch(error => {
             // 요청이 실패한 경우 에러 처리
@@ -184,7 +199,7 @@ export default function RegisterScreen({}) {
         });        
     };
 
-    const focusOutPw=()=>{
+    const focusOutPw=async()=>{
         if(Checklist.pwString==false){
             pwStringTest(1);
             return 0;
@@ -275,33 +290,35 @@ export default function RegisterScreen({}) {
     
     const handlePress = () => {
         Keyboard.dismiss(); // 키보드를 숨기는 함수
-      };
+    };
 
-      const joinClick = async () => {
+    // 회원가입 완료 함수
+    const joinClick = async () => {
+        if(passwordValue==""){
+            Alert.alert("입력되지 않은 값이 존재합니다", "입력해주시길 바랍니다.");
+            console.log("박정재 먹고자고");
+            Checklist.pwCheck = false;
+    }
         await focusOutNickname();
         await focusOutId();
         await focusOutPw();
         
-        
         // delay for 1500 milliseconds
         console.log("여기 실행한다!?!?!",Checklist.idCheck, Checklist.pwCheck, Checklist.nicknameCheck,Checklist.idString, Checklist.pwString);
         if (Checklist.pwCheck && Checklist.pwString && Checklist.idCheck && Checklist.idString && Checklist.nicknameCheck){
-        Alert.alert(                     
-            "회원가입을 하시겠습니까?",                   // 첫번째 text: 타이틀 제목
-                [                              // 버튼 배열
-            {
-                text: "아니요",                              // 버튼 제목
-                onPress: () => console.log("아니라는데"),     //onPress 이벤트시 콘솔창에 로그를 찍는다
-                style: "cancel"
-            },
-            { text: "네", onPress: () => doJoin() }, //버튼 제목
-                                                                    // 이벤트 발생시 로그를 찍는다
-            ],
-            { cancelable: false }
-            );
-        }
+            Alert.alert(                     
+                "회원가입을 하시겠습니까?",                   // 첫번째 text: 타이틀 제목            
+                '',
+                [ // 버튼 배열
+                { text: "취소",                 // 버튼 제목          
+                  onPress: ()=> console.log("회원가입 취소")},    //onPress 이벤트시 콘솔창에 로그를 찍는다                                     
+                { text: "확인",                 //버튼 제목
+                  onPress: ()=> doJoin()}       // 이벤트 발생시 함수 실행            
+                ]
+                );
+            }
+        };
 
-    };
     // render(){
         return (
             <TouchableWithoutFeedback onPress={handlePress}> 
@@ -357,13 +374,14 @@ export default function RegisterScreen({}) {
                         />
 
                 </View>
+                <Text></Text>
                 <View style={styles.TailArea}>
                   <View style={styles.buttonArea}>
-                      <TouchableOpacity 
-                        style={styles.buttonJoin}
-                        onPress={joinClick}>
-                          <Text style={styles.buttonTitle}>회원가입</Text>
-                      </TouchableOpacity>
+                    <CustomButton
+                        title = '회원가입'
+                        buttonColor = '#85BEFE'
+                        onPress={joinClick}
+                    />
                   </View>
                 </View>
             </View>
@@ -376,60 +394,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        paddingLeft: wp('10%'),
-        paddingRight: wp('10%'),
+        alignItems: 'center',
         justifyContent: 'center',
     },
-    titleArea: {
-        // width: '100%',
-        // padding: wp('10%'),
-        flex: 1,
-        alignItems: 'center',
-        //backgroundColor : "blue",
-        justifyContent:'flex-end',
-        
-    },
-    title: {
-        fontSize: wp('10%'),
+    titleArea: {        
     },
     formArea: {
-        width: '100%',
-        paddingBottom: wp('15%'),
-        flex: 0.5,
-        //backgroundColor: "green"
     },
     textForm: {
         borderWidth: 0.5,
         borderColor: '#888',
-        width: '100%',
-        height: hp('5%'),
-        paddingLeft: 5,
-        paddingRight: 5,
-        marginBottom: 10,
+        width: 290,
+        height: 45,
+        paddingLeft: 20,
+        marginTop: 10,
     },
     buttonArea: {
-        width: '100%',
-        height: hp('7%'),
-    },
-    buttonJoin: {
-        backgroundColor: "#90b2d1",
-        width: "100%",
-        height: "80%",
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    buttonTitle: {
-        color: 'white',
-    },
-    TailArea:{
-      flex:0.9,
-      // backgroundColor:"red",
     },
     logoPhoto: {
-        width: 200,
+        width: 150,
         height: 150, 
+        justifyContent: 'center',
         marginBottom: 20,
-
-    }
+    },
 })

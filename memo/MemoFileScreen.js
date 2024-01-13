@@ -5,6 +5,7 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
+    Alert,
     Image,
 } from 'react-native';
 
@@ -20,15 +21,14 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 
 export default function MemoFolderScreen({}) {
-    const data = [
-        { label: '생성순', value: 1 },
-        { label: '이름순', value: 0 },
-    ];
 
-      const navigation = useNavigation();
+
+    const navigation = useNavigation();
 
     const [folderList, setFolderList] = useState([]);
-    const [folderName, setFolderName] = useState("");
+    const [memoName, setMemoName] = useState("");
+    const [memoContent, setMemoContent] = useState("");
+    const [memoId, setMemoId] =useState("");
     const [memoList, setMemoList] = useState([]);
     const [memoListHeight, setHeight] = useState(0);
     const [userId, setId] = useState("");
@@ -36,135 +36,96 @@ export default function MemoFolderScreen({}) {
     const [byCreate,setByCreate] =useState(1);
     const [byName,setByName] =useState(0);
     const [selectedItem, setSelectedItem] = useState(null);
-    const [value, setValue] = useState({ label: '생성순', value: byCreate });
+    const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
 
 
 
     useEffect(() => {
 
-        AsyncStorage.multiGet(['userId', 'folderId']).then(values => {
+        AsyncStorage.multiGet(['userId', 'memoId']).then(values => {
             const parsedUserId = JSON.parse(values[0][1]);
-            const parsedFolderId = JSON.parse(values[1][1]);
+            const parsedMemoId = JSON.parse(values[1][1]);
+
+
 
             setId(parsedUserId);
-            setFolderId(parsedFolderId);
-            fetchData(parsedFolderId,byCreate, byName);
+            setMemoId(parsedMemoId);
+            fetchData(parsedMemoId);
+            console.log("메모아이딩:",parsedMemoId);
         });
     }, []);
-
-    const fetchData = async (parsedFolderId, byCreate, byName) => {
+    
+    const fetchData = async (parsedMemoId) => {
         try {
             const requestDataMemo = {
-                folderId: parsedFolderId,
-                byCreate: byCreate,
-                byName: byName
+                memoId: parsedMemoId,
             };
+            
+            const responseMemo = await axios.post('http://43.201.9.115:3000/return-memo', requestDataMemo);
+            const memoContentData = responseMemo.data.data;
+            setMemoName(memoContentData[0]["memoName"]);
+            setMemoContent(memoContentData[0]["content"]);
 
-            const responseMemo = await axios.post('http://43.201.9.115:3000/return-folderMemo', requestDataMemo);
-            const memoListData = responseMemo.data;
-            console.log(memoListData)
 
-            setFolderName(responseMemo.data["folderName"]);
-            setMemoList(responseMemo.data.data);
-
-            if(memoListData.data.length>1){
-                setHeight((memoListData.data.length)*120)
+            if(memoContentData[0]["content"].length>738){
+                setHeight(((memoContentData[0]["content"].length)/30)*30)
             }
             console.log("height",memoListHeight);
-            console.log(memoListData.data.length);
+
+            console.log("오잉",memoContentData["memoName"]);
+            console.log(responseMemo.data);
+            console.log(memoContentData[0]["memoName"]);
+
 
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
-    const moveToMemo =(memoId)=>{
-        console.log(memoId);
-        saveId(memoId);
-        // Your logic here
-        navigation.navigate('MemoFile');
-    }
-    const saveId=async(memoId,folderId) => {
-        try {
-            // await AsyncStorage.setItem("userId", JSON.stringify(userId));
-            await AsyncStorage.setItem("memoId", JSON.stringify(memoId));
-
-            console.log('메모 아이디 저장 성공'); // 확인용
-        } catch (e) {
-            console.error(e);
+    const renderLabel = () => {
+        if (value || isFocus) {
+          return (
+            <Text style={[styles.label, isFocus && { color: 'blue' }]}>
+              Dropdown label
+            </Text>
+          );
         }
+        return null;
+      };
+
+    const deleteButtonTouch=()=>{
+        Alert.alert("삭제할겨? 아직 ㅈㅅ")
+    }
+
+    const editButtonTouch=()=>{
+        Alert.alert("편집할겨? 아직 ㅈㅅ")
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.titleArea}>
-                <Text style={styles.title}>MEMO</Text>
+                <Text style={styles.title}>{memoName}</Text>
+                <TouchableOpacity 
+                    style={styles.buttonIcon}
+                    onPress={() => deleteButtonTouch()}>
+                    <Text style={styles.textButton}>  삭제  </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                    style={styles.buttonIcon}
+                    onPress={() => editButtonTouch()}>
+                    <Text style={styles.textButton}>  편집  </Text>
+                    </TouchableOpacity>
             </View>
-            <Text style={styles.titleFolderName}>{folderName}</Text>
             <View style={styles.subseperator}/>
-            <View style={styles.extraButtonArea}>
-            <Dropdown
-                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={data}
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                value={value}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={(selectedValue) => {
-                    let create = 0;
-                    let name = 0;
-                    if (selectedValue["label"] === "이름순") {
-                        create = 0;
-                        name = 1;
-                        setByName(1);
-                        setByCreate(0);
-                    } 
-                    
-                    else if (selectedValue["label"] === "생성순") {
-                        create = 1;
-                        name = 0;
-                        setByName(0);
-                        setByCreate(1);
-                    }
-
-                    fetchData(folderId, create, name);
-                    console.log(selectedValue);
-                    setValue(selectedValue);
-                }}
-                />
-                </View>
-            <View style={styles.memoListArea}>
+            <View style={styles.memoBackgroundArea}>
             <ScrollView
                 vertical
                 contentContainerStyle={{
                 ...styles.scrollViewMemo,
-                    height: memoListHeight,}}
+                    height: 580,}}
                 showsHorizontalScrollIndicator={false}
             >
-                {/*메모 리스트*/}
-                {memoList.map((memo, index) => (
-                    <TouchableOpacity
-                        style={styles.memoButton}
-                        onPress={() => moveToMemo(memo.memoId)}
-                        key={index}
-                    >
-                        <View style={styles.memoTitleArea}>
-                            <Image
-                            style={styles.memoImage}
-                            source={require('../assets/icons/memo/Memo_main_folderIcon.png')}
-                            /><Text style={styles.memoTitle}>{
-                            memo.memoName}</Text></View>
-                            {/*Text 길이제한*/}
-                        <Text style={styles.memoInfo} numberOfLines={3}>{memo.content}</Text>
-                    </TouchableOpacity>
-                ))}
-
+                <Text style={styles.contentArea}>{memoContent}</Text>
             </ScrollView>
             </View>
             <View style={styles.iconButton}>
@@ -208,20 +169,25 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     titleArea: {
-        alignItems: 'center',
+        flexDirection:"row",
+        // alignItems: 'center',
         backgroundColor: "white",
-        justifyContent: 'center',
-        marginBottom: 20,
-        flex:0.2,
-        // backgroundColor: "red"
+        // justifyContent: 'center',
+        marginBottom: 10,
+        flex:0.08,
+        paddingTop:80,
+        // backgroundColor: "red",
+        alignItems:"center",
     },
     title: {
-        fontSize: 40,
+        width:290,
+        height:40,
+        fontSize: 30,
+        // backgroundColor:"green",
     },
-    titleFolderName: {
-
-        fontSize: 27,
-        margin: 10,
+    textButton :{
+        height:20,
+        // backgroundColor: "blue",
     },
     scrollViewMemo: {
         alignItems: 'center',
@@ -229,14 +195,19 @@ const styles = StyleSheet.create({
         flexDirection: 'collum',
         justifyContent: 'space-between',
     },
-    memoListArea: {
-        flex: 0.8,
+    memoBackgroundArea: {
+        flex: 1,
         // backgroundColor: "blue",
+    },
+    contentArea:{
+        // backgroundColor: "yellow",
+        width: 390,
+        fontSize: 20,
     },
     subseperator: {            // 구분자
         height: 1,
         backgroundColor: 'black',
-        marginTop: 5,
+        marginTop: 1,
         margin: 10,
     },
     miniButtonArea:{
@@ -266,7 +237,7 @@ const styles = StyleSheet.create({
         flex:1,
     },
     memoList:{
-        backgroundColor:"green",
+        // backgroundColor:"green",
         flex:1,
         alignItems: 'center',
         
@@ -299,8 +270,6 @@ const styles = StyleSheet.create({
     memoInfo: {
         marginTop: 7,
         color: '#404040',
-        width:335,
-        fontSize:13,
     },
     buttonIcon: {
 
@@ -316,39 +285,40 @@ const styles = StyleSheet.create({
         margin: 12,
     },
      dropdown: {
-         height: 70,
-         width:100,
-         paddingHorizontal: 8,
-        },
-        icon: {
-            marginRight: 5,
-        },
-        label: {
-            position: 'absolute',
-            backgroundColor: 'white',
-            left: 22,
-            top: 8,
-            zIndex: 999,
-            paddingHorizontal: 8,
-            fontSize: 14,
-        },
-        placeholderStyle: {
-            fontSize: 16,
-        },
-        selectedTextStyle: {
-            fontSize: 16,
-        },
-        iconStyle: {
-            width: 20,
-            height: 20,
-        },
-        inputSearchStyle: {
-            height: 40,
-            fontSize: 16,
-        },
-        extraButtonArea : {
-            alignItems: "flex-end",
-            height: 50,      
+        height: 70,
+        width:100,
+        paddingHorizontal: 8,
     },
-
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },  
+    dotImage : {
+        flexDirection:"row",
+        alignItems:'flex-end',
+        width: 20,
+        height : 25,
+    },
 });
